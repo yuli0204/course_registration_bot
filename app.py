@@ -11,7 +11,7 @@ def get_student_number():
         'student_number': '200594065'
     }
     return jsonify(student_number)
-    
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     req = request.get_json(silent=True, force=True)
@@ -49,13 +49,12 @@ def handle_track_registration(req):
     user_registrations = [r for r in registrations if r['email'] == email]
     
     if user_registrations:
-        response = 'Here are your registered classes:    \n'
+        response = 'Here are your registered classes:  \n'
         for reg in user_registrations:
-            response += f"{reg['course_type']} on {reg['day_of_week']} in the {reg['time_of_day']}    \n"
+            response += f"{reg['course_type']} on {reg['day_of_week']} in the {reg['time_of_day']}  \n"
         return {'fulfillmentText': response}
     else:
         return {'fulfillmentText': 'You have no registered classes.'}
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
-
