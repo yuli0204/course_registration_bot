@@ -1,8 +1,16 @@
 from flask import Flask, request, jsonify
+import os
 
 app = Flask(__name__)
 
 registrations = []
+
+@app.route('/', methods=['GET'])
+def get_student_number():
+    student_number = {
+        'student_number': '200594065'
+    }
+    return jsonify(student_number)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -18,8 +26,8 @@ def webhook():
 
 def handle_course_registration(req):
     params = req.get('queryResult').get('parameters')
-    username = params.get('UserInfo').get('name')
-    email = params.get('UserInfo').get('email')
+    username = params.get('UserName')
+    email = params.get('Email')
     course_type = params.get('CourseType')
     day_of_week = params.get('DayOfWeek')
     time_of_day = params.get('TimeOfDay')
@@ -36,17 +44,17 @@ def handle_course_registration(req):
 
 def handle_track_registration(req):
     params = req.get('queryResult').get('parameters')
-    email = params.get('UserInfo').get('email')
+    email = params.get('Email')
 
     user_registrations = [r for r in registrations if r['email'] == email]
     
     if user_registrations:
-        response = 'Here are your registered classes:\n'
+        response = 'Here are your registered classes:  \n'
         for reg in user_registrations:
-            response += f"{reg['course_type']} on {reg['day_of_week']} in the {reg['time_of_day']}\n"
+            response += f"{reg['course_type']} on {reg['day_of_week']} in the {reg['time_of_day']}  \n"
         return {'fulfillmentText': response}
     else:
         return {'fulfillmentText': 'You have no registered classes.'}
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
